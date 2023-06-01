@@ -46,7 +46,7 @@ data class Post(
     val likes: Likes = Likes()
 )
 
-class Donut(
+data class Donut(
     val isDonut: Boolean = false,
     val paidDuration: Int = 10,
     val placeholder: Placeholder? = null,
@@ -56,29 +56,29 @@ class Donut(
 
 class Placeholder()
 class PostSource()
-class Copyright(
+data class Copyright(
     val id: Int = 1,
     val link: String = "link",
     val name: String = "name",
     val type: String = "type"
 )
-class Geo(
+data class Geo(
     val type: String = "place",
     val coordinates: String = "12.05",
     val place: Place = Place()
 )
 
-class Place(
+data class Place(
     val somePlace: Int = 0
 )
-class Views(
+data class Views(
     val count: Int = 0
 )
-class Reposts(
+data class Reposts(
     val count: Int = 0,
     val userReposted: Boolean = false
 )
-class Comments(
+data class Comments(
     val count: Int = 0,
     val canPost: Boolean = true,
     val groupsCanPost: Boolean = true,
@@ -86,7 +86,7 @@ class Comments(
     val canOpen: Boolean = false
 )
 
-class Likes(
+data class Likes(
         val count: Int = 0,
         val userLikes: Boolean = true,
         val canLike: Boolean = true,
@@ -104,7 +104,7 @@ object WallService {
 
     fun addPostToWall(post: Post): Post {
         id += 1
-        wallOfPosts += post.copy(id = id)
+        wallOfPosts += post.copy(id = id, likes = post.likes.copy())
         return wallOfPosts.last()
     }
 
