@@ -17,6 +17,22 @@ fun main() {
 
 }
 
+interface Attachment{
+    val type: String
+}
+
+class Audio(override val type: String) : Attachment{}
+class Video(override val type: String) : Attachment{}
+class Photo(override val type: String) : Attachment{}
+class Doc(override val type: String) : Attachment{}
+class Link(override val type: String) : Attachment{}
+
+class AudioAttachment(override val type: String, val audio: Audio): Attachment{}
+class VideoAttachment(override val type: String, val video: Video): Attachment{}
+class PhotoAttachment(override val type: String, val photo: Photo): Attachment{}
+class DocAttachment(override val type: String, val doc: Doc): Attachment{}
+class LinkAttachment(override val type: String, val link: Link): Attachment{}
+
 data class Post(
     val id: Int = 0,
     val ownerId: Int = 123456,
@@ -43,7 +59,8 @@ data class Post(
     val markedAsAds: Boolean = false,
     val isFavorite: Boolean = false,
     val donut: Donut? = Donut(),
-    val likes: Likes = Likes()
+    val likes: Likes = Likes(),
+    val attachments: Array<Attachment> = emptyArray()
 )
 
 class Donut(
@@ -62,6 +79,7 @@ class Copyright(
     val name: String = "name",
     val type: String = "type"
 )
+
 class Geo(
     val type: String = "place",
     val coordinates: String = "12.05",
@@ -71,13 +89,16 @@ class Geo(
 class Place(
     val somePlace: Int = 0
 )
+
 class Views(
     val count: Int = 0
 )
+
 class Reposts(
     val count: Int = 0,
     val userReposted: Boolean = false
 )
+
 class Comments(
     val count: Int = 0,
     val canPost: Boolean = true,
@@ -87,10 +108,10 @@ class Comments(
 )
 
 class Likes(
-        val count: Int = 0,
-        val userLikes: Boolean = true,
-        val canLike: Boolean = true,
-        val canPublish: Boolean = true
+    val count: Int = 0,
+    val userLikes: Boolean = true,
+    val canLike: Boolean = true,
+    val canPublish: Boolean = true
 ) {
     override fun toString(): String {
         return "$count"
