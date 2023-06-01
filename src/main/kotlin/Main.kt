@@ -21,17 +21,17 @@ interface Attachment{
     val type: String
 }
 
-class Audio(override val type: String) : Attachment{}
-class Video(override val type: String) : Attachment{}
-class Photo(override val type: String) : Attachment{}
-class Doc(override val type: String) : Attachment{}
-class Link(override val type: String) : Attachment{}
+data class Audio(val id: Int)
+data class Video(val id: Int)
+data class Photo(val id: Int)
+data class Doc(val id: Int)
+data class Link(val id: Int)
 
-class AudioAttachment(override val type: String, val audio: Audio): Attachment{}
-class VideoAttachment(override val type: String, val video: Video): Attachment{}
-class PhotoAttachment(override val type: String, val photo: Photo): Attachment{}
-class DocAttachment(override val type: String, val doc: Doc): Attachment{}
-class LinkAttachment(override val type: String, val link: Link): Attachment{}
+data class AudioAttachment(val audio: Audio): Attachment{override val type = "audio"}
+data class VideoAttachment(val video: Video): Attachment{override val type = "video"}
+data class PhotoAttachment(val photo: Photo): Attachment{override val type = "photo"}
+data class DocAttachment(val doc: Doc): Attachment{override val type = "doc"}
+data class LinkAttachment(val link: Link): Attachment{ override val type = "link" }
 
 data class Post(
     val id: Int = 0,
