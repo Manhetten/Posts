@@ -90,6 +90,7 @@ data class Place(
     val somePlace: Int = 0
 )
 
+
 data class Views(
     val count: Int = 0
 )
