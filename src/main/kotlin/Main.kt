@@ -17,6 +17,22 @@ fun main() {
 
 }
 
+interface Attachment{
+    val type: String
+}
+
+data class Audio(val id: Int)
+data class Video(val id: Int)
+data class Photo(val id: Int)
+data class Doc(val id: Int)
+data class Link(val id: Int)
+
+data class AudioAttachment(val audio: Audio): Attachment{override val type = "audio"}
+data class VideoAttachment(val video: Video): Attachment{override val type = "video"}
+data class PhotoAttachment(val photo: Photo): Attachment{override val type = "photo"}
+data class DocAttachment(val doc: Doc): Attachment{override val type = "doc"}
+data class LinkAttachment(val link: Link): Attachment{ override val type = "link" }
+
 data class Post(
     val id: Int = 0,
     val ownerId: Int = 123456,
@@ -43,7 +59,8 @@ data class Post(
     val markedAsAds: Boolean = false,
     val isFavorite: Boolean = false,
     val donut: Donut? = Donut(),
-    val likes: Likes = Likes()
+    val likes: Likes = Likes(),
+    val attachments: Array<Attachment> = emptyArray()
 )
 
 data class Donut(
@@ -62,6 +79,7 @@ data class Copyright(
     val name: String = "name",
     val type: String = "type"
 )
+
 data class Geo(
     val type: String = "place",
     val coordinates: String = "12.05",
@@ -71,13 +89,17 @@ data class Geo(
 data class Place(
     val somePlace: Int = 0
 )
+
+
 data class Views(
     val count: Int = 0
 )
+
 data class Reposts(
     val count: Int = 0,
     val userReposted: Boolean = false
 )
+
 data class Comments(
     val count: Int = 0,
     val canPost: Boolean = true,
@@ -87,10 +109,10 @@ data class Comments(
 )
 
 data class Likes(
-        val count: Int = 0,
-        val userLikes: Boolean = true,
-        val canLike: Boolean = true,
-        val canPublish: Boolean = true
+    val count: Int = 0,
+    val userLikes: Boolean = true,
+    val canLike: Boolean = true,
+    val canPublish: Boolean = true
 ) {
     override fun toString(): String {
         return "$count"
