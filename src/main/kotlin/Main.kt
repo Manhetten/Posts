@@ -138,7 +138,7 @@ data class Comment(
 )
 
 class ParentStacks()
-class PostNotFoundExeption(message: String): RuntimeException(message)
+class PostNotFoundException(message: String): RuntimeException(message)
 
 object WallService {
     private var wallOfPosts = emptyArray<Post>()
@@ -177,7 +177,7 @@ object WallService {
                 return comments.last()
             }
         }
-        throw PostNotFoundExeption("Поста с ID $postId не существует")
+        throw PostNotFoundException("Поста с ID $postId не существует")
     }
 
     fun clear() {
