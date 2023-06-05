@@ -1,8 +1,6 @@
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class WallServiceTest {
 
@@ -15,9 +13,9 @@ class WallServiceTest {
     fun addPostToWall() {
 
         val post = Post()
-        val i = WallService.addPostToWall(post = post).id
+        val result = WallService.addPostToWall(post = post).id
 
-        assertNotEquals(0, i)
+        assertNotEquals(0, result)
     }
 
     @Test
@@ -37,4 +35,18 @@ class WallServiceTest {
 
         assertFalse(result)
     }
+
+    @Test
+    fun createComment() {
+        val post = WallService.addPostToWall(post = Post())
+        val result = WallService.createComment(1, comment = Comment(text = "Good bye"))
+        assertNotEquals(0, result.id)
+    }
+
+    @Test(expected = PostNotFoundExeption::class)
+    fun shouldThrow() {
+        val post = WallService.addPostToWall(post = Post())
+        val result = WallService.createComment(23, comment = Comment())
+    }
+
 }

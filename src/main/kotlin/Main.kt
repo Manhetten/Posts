@@ -1,3 +1,5 @@
+import java.lang.RuntimeException
+
 fun main() {
 
     val post = Post(likes = Likes(1))
@@ -14,6 +16,10 @@ fun main() {
     println()
 
     WallService.print() //замена поста с найденным id
+    println(WallService.createComment(1, comment = Comment(text = "привет")))
+    println(WallService.createComment(3, comment = Comment(text = "пока")))
+    println(WallService.createComment(56, comment = Comment(text = "привет")))
+
 
 }
 
@@ -119,10 +125,26 @@ data class Likes(
     }
 }
 
+data class Comment(
+    val id: Int = 0,
+    val fromId: Int = 123,
+    val date: Int = System.currentTimeMillis().toInt(),
+    val text: String = "Hello",
+    val donut: Donut? = null,
+    val replyToComment: Int = 12345,
+    val attachment: Attachment? = null,
+    val parentsStack: Array<ParentStacks> = emptyArray(),
+    val thread: Thread? = null
+)
+
+class ParentStacks()
+class PostNotFoundExeption(message: String): RuntimeException(message)
 
 object WallService {
     private var wallOfPosts = emptyArray<Post>()
+    private var comments = emptyArray<Comment>()
     private var id = 0
+    private var commentId = 0
 
     fun addPostToWall(post: Post): Post {
         id += 1
@@ -146,6 +168,16 @@ object WallService {
             }
         }
         return false
+    }
+
+    fun createComment(postId: Int, comment: Comment): Comment {
+        for (post in wallOfPosts) {
+            if (postId == post.id) {
+                comments += comment.copy(id = ++commentId)
+                return comments.last()
+            }
+        }
+        throw PostNotFoundExeption("Поста с ID $postId не существует")
     }
 
     fun clear() {
