@@ -43,7 +43,7 @@ class WallServiceTest {
         assertNotEquals(0, result.id)
     }
 
-    @Test(expected = PostNotFoundExeption::class)
+    @Test(expected = PostNotFoundException::class)
     fun shouldThrow() {
         val post = WallService.addPostToWall(post = Post())
         val result = WallService.createComment(23, comment = Comment())
