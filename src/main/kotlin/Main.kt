@@ -23,7 +23,7 @@ fun main() {
 
 }
 
-interface Attachment{
+interface Attachment {
     val type: String
 }
 
@@ -33,11 +33,25 @@ data class Photo(val id: Int)
 data class Doc(val id: Int)
 data class Link(val id: Int)
 
-data class AudioAttachment(val audio: Audio): Attachment{override val type = "audio"}
-data class VideoAttachment(val video: Video): Attachment{override val type = "video"}
-data class PhotoAttachment(val photo: Photo): Attachment{override val type = "photo"}
-data class DocAttachment(val doc: Doc): Attachment{override val type = "doc"}
-data class LinkAttachment(val link: Link): Attachment{ override val type = "link" }
+data class AudioAttachment(val audio: Audio) : Attachment {
+    override val type = "audio"
+}
+
+data class VideoAttachment(val video: Video) : Attachment {
+    override val type = "video"
+}
+
+data class PhotoAttachment(val photo: Photo) : Attachment {
+    override val type = "photo"
+}
+
+data class DocAttachment(val doc: Doc) : Attachment {
+    override val type = "doc"
+}
+
+data class LinkAttachment(val link: Link) : Attachment {
+    override val type = "link"
+}
 
 data class Post(
     val id: Int = 0,
@@ -138,7 +152,7 @@ data class Comment(
 )
 
 class ParentStacks()
-class PostNotFoundException(message: String): RuntimeException(message)
+class PostNotFoundException(message: String) : RuntimeException(message)
 
 object WallService {
     private var wallOfPosts = emptyArray<Post>()
@@ -183,6 +197,8 @@ object WallService {
     fun clear() {
         wallOfPosts = emptyArray()
         id = 0
+        comments = emptyArray()
+        commentId = 0
     }
 
     fun print() {
@@ -190,5 +206,4 @@ object WallService {
             println(post)
         }
     }
-
 }
