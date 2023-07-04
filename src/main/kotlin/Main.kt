@@ -2,24 +2,54 @@ import java.lang.RuntimeException
 
 fun main() {
 
-    val post = Post(likes = Likes(1))
-    val post1 = Post(likes = Likes(1))
-    val post2 = Post(likes = Likes(1))
+//    val post = Post(likes = Likes(1))
+//    val post1 = Post(likes = Likes(1))
+//    val post2 = Post(likes = Likes(1))
+//
+//    println(WallService.addPostToWall(post = post))
+//    println(WallService.addPostToWall(post = post1))
+//    println(WallService.addPostToWall(post = post2))
+//    println()
+//
+//    println(WallService.update(post = Post(id = 1))) // пост с id найден и заменен
+//    println(WallService.update(post = Post(id = 5))) // пост с id не найден
+//    println()
+//
+//    WallService.print() //замена поста с найденным id
+//    println()
+//    println(WallService.createComment(1, comment = Comment(text = "привет")))
+//    println(WallService.createComment(3, comment = Comment(text = "пока")))
+//    // println(WallService.createComment(56, comment = Comment(text = "привет")))
+//    println()
 
-    println(WallService.addPostToWall(post = post))
-    println(WallService.addPostToWall(post = post1))
-    println(WallService.addPostToWall(post = post2))
-    println()
-
-    println(WallService.update(post = Post(id = 1))) // пост с id найден и заменен
-    println(WallService.update(post = Post(id = 5))) // пост с id не найден
-    println()
-
-    WallService.print() //замена поста с найденным id
-    println(WallService.createComment(1, comment = Comment(text = "привет")))
-    println(WallService.createComment(3, comment = Comment(text = "пока")))
-    println(WallService.createComment(56, comment = Comment(text = "привет")))
-
+    println(NoteService.add(Note("123", "hello")))
+    println(NoteService.add(Note("234", "hello")))
+    println(NoteService.add(Note("345", "hello")))
+    println("--удаляю заметку--")
+//    NoteService.delete(10001)
+//    NoteService.read()
+    println("--редактирую заметку--")
+    NoteService.edit(Note("123", "bye", noteId = 10002))
+    NoteService.read()
+    println("--получаю заметку по id--")
+    println(NoteService.getById(10003))
+    println("--создаю комментарии--")
+    NoteService.createComment(10002,"comment")
+//    println(NoteService.createComment(10005, "error"))
+    NoteService.createComment(10002, "second comment")
+    println("--получаю список комментариев к заметке--")
+    NoteService.getComments(10002)
+    println("--Удаляю заметку--")
+    NoteService.delete(10001)
+//    NoteService.read()
+//    NoteService.getComments(10002)
+    println("--редактирую комментарий--")
+    NoteService.editComment(20001, "edit comment")
+    println("--Удаляю комментарий--")
+    NoteService.deleteComment(20002)
+    NoteService.getComments(10002)
+    NoteService.restoreComment(20002)
+    NoteService.getComments(10002)
 
 }
 
@@ -151,18 +181,34 @@ data class Comment(
     val thread: Thread? = null
 )
 
+data class Note(
+    val title: String,
+    val text: String,
+    val privacy: Int = 0,
+    val noteId: Long = 0,
+    val date: Int = System.currentTimeMillis().toInt()
+)
+
+data class NoteComment(
+    val noteId: Long,
+    val message: String,
+    var visibility: Boolean = true,
+    val commentId: Long
+)
+
 class ParentStacks()
 class PostNotFoundException(message: String) : RuntimeException(message)
+class NoteNotFoundException(message: String) : RuntimeException(message)
 
 object WallService {
     private var wallOfPosts = emptyArray<Post>()
     private var comments = emptyArray<Comment>()
-    private var id = 0
+    private var postId = 0
     private var commentId = 0
 
     fun addPostToWall(post: Post): Post {
-        id += 1
-        wallOfPosts += post.copy(id = id, likes = post.likes.copy())
+        postId += 1
+        wallOfPosts += post.copy(id = postId, likes = post.likes.copy())
         return wallOfPosts.last()
     }
 
@@ -196,14 +242,127 @@ object WallService {
 
     fun clear() {
         wallOfPosts = emptyArray()
-        id = 0
+        postId = 0
         comments = emptyArray()
         commentId = 0
     }
 
     fun print() {
+        println("Список постов:")
         for (post in wallOfPosts) {
             println(post)
         }
+    }
+}
+
+object NoteService {
+    private var notesList = mutableListOf<Note>()
+    private var noteId: Long = 10_000
+    private var commentsList = mutableListOf<NoteComment>()
+    private var commentId: Long = 20_000
+    fun add(note: Note): Note {
+        notesList.add(note.copy(noteId = ++noteId))
+        return notesList.last()
+    }
+
+    fun edit(editNote: Note): Boolean {
+        val index = notesList.indexOfFirst { it.noteId == editNote.noteId }
+        return if (index >= 0) {
+            notesList[index] = editNote
+            println("Заметка изменена")
+            true
+        } else {
+            throw NoteNotFoundException("Заметка с id ${editNote.noteId} не найдена")
+        }
+    }
+    fun delete(noteId: Long): Boolean {
+        if (doesNoteExist(noteId)) {
+            notesList.removeIf { it.noteId == noteId }
+            commentsList.removeAll { it.noteId == noteId }
+            println("Заметка с id $noteId удалена")
+            return true
+        }
+        throw NoteNotFoundException("Заметка с id $noteId не существует")
+    }
+
+    fun read() {
+        println("Список заметок:")
+        this.notesList.forEach(::println)
+    }
+
+    fun getById(id: Long): Note {
+        for (note in notesList) if (note.noteId == id) {
+            return note
+        }
+        throw NoteNotFoundException("Поста с id $id нет")
+    }
+
+    fun createComment(noteId: Long, message: String): Boolean {
+        return if (doesNoteExist(noteId)) {
+            commentsList.add(NoteComment(noteId = noteId,message = message, commentId = ++commentId))
+            println(commentsList.last())
+            return true
+        } else throw NoteNotFoundException("Невозможно оставить комментарий. Поста с id $noteId нет")
+    }
+
+    fun editComment(commentId: Long, message: String): Boolean {
+        for ((index, comment) in commentsList.withIndex()) {
+            if (comment.commentId == commentId) {
+                commentsList[index] = comment.copy(message = message)
+                println("Комментарий с id $commentId изменён")
+                return true
+            }
+        }
+        throw NoteNotFoundException("Заметка и комментарии удалены")
+    }
+
+    fun deleteComment(commentId: Long): Boolean {
+        for (comment in commentsList) {
+            if (commentId == comment.commentId) {
+                comment.visibility = false
+                println("Комментарий c id $commentId удалён")
+                return true
+            }
+        }
+        throw NoteNotFoundException("Комментарий с id $commentId уже удалён")
+    }
+
+    fun restoreComment(commentId: Long): Boolean {
+        for (comment in commentsList) {
+            if (comment.commentId == commentId && !comment.visibility) {
+                comment.visibility = true
+                println("Комментарий с id $commentId восстановлен")
+                return true
+            }
+        }
+        throw NoteNotFoundException("Комментарий с id $commentId не существует")
+    }
+
+    fun getComments(noteId: Long) {
+        if (!doesNoteExist(noteId)) {
+            throw NoteNotFoundException("Заметка с id $noteId не существует")
+        }
+        println("Список комментариев к заметке $noteId:")
+        commentsList.forEach { comment ->
+            if (comment.noteId == noteId && comment.visibility) {
+                println(comment)
+            }
+        }
+    }
+
+    private fun doesNoteExist(noteId: Long): Boolean {
+        var exists = false
+        this.notesList.forEach {
+            if (it.noteId == noteId) {
+                exists = true
+            }
+        }
+        return exists
+    }
+    fun clear() {
+        notesList = mutableListOf()
+        noteId = 10000
+        commentsList = mutableListOf()
+        commentId = 20000
     }
 }
